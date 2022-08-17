@@ -1,5 +1,4 @@
 import model
-
 import torch
 from torchvision import transforms
 
@@ -9,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class glottisnet():
-    def __init__(self, weights_path="models/unet_dummy.pth"):
+    def __init__(self, weights_path="/Users/ranranm1/Developer/britescope-main/MacWebsiteComponents/models/unet_dummy.pth"):
         #compose the all transformation
         self.image_transforms = transforms.Compose([transforms.ToTensor(), transforms.Grayscale(), transforms.Resize((284,284))])
 

@@ -5,6 +5,7 @@
 import cv2
 #from imutils.video.pivideostream import PiVideoStream
 from faceRecogLayer import run_detection
+import glottisnet as gnet
 import imutils
 import datetime
 import time
@@ -35,6 +36,9 @@ class VideoCamera(object):
         #text fonts
         self.timerFont = ImageFont.truetype("/Users/ranranm1/Developer/britescope-main/MacWebsiteComponents/Gidole-Regular.ttf", size=80)
         self.textFont = ImageFont.truetype("/Users/ranranm1/Developer/britescope-main/MacWebsiteComponents/Gidole-Regular.ttf", size=40)
+
+        #glottisnet
+        #self.glnet = gnet.glottisnet()
 
         #sleep to make sure stream is up before doing anything else
         time.sleep(2.0)
@@ -69,7 +73,7 @@ class VideoCamera(object):
              #get the time to draw by checking when the timer should start
             timeToDraw = self.timerLength - (int(time.time())-self.startTime)
             if timeToDraw >=0:
-                 draw.text((300,10), str(timeToDraw), fill=(255,255,255,128), font = self.timerFont)
+                draw.text((300,10), str(timeToDraw), fill=(255,255,255,128), font = self.timerFont)
             elif timeToDraw>=-10:
                 #hold timer for 10 seconds
                 draw.text((50,10), "Warning 30 seconds has passed!", fill=(255,255,255,128), font = self.textFont)
@@ -86,18 +90,23 @@ class VideoCamera(object):
         This method gets a frame of video to serve the website 
         @ret byte representation of a frame
         '''
-        ret, frame = self.vs.read()
+        _, frame = self.vs.read()
 
         #only run detection for faces every three frames
-        self.counter = self.counter%3
-        if (self.counter==0):
+        self.counter = self.counter%6
+        if (self.counter==0 and self.timerRunning==False):
             prob = []
             self.boxes, self.prob = run_detection(frame)
         self.counter += 1
+        #if (self.counter==0 and self.timerRunning==True):
+            #run glottis detection
+            #if frame.all() != None:
+                #self.glnet.drawBoundingBox(frame)
+        #self.counter += 1
 
         #draw any boxes that need to be drawn on the image and return the frame
         frame = self.draw_box_on_image(self.boxes, self.prob, frame)
-        ret, jpeg = cv2.imencode('.jpg', frame)
+        _, jpeg = cv2.imencode('.jpg', frame)
 
         #if procedure is started (face was seen) save video to videos
         if (self.timerRunning):
