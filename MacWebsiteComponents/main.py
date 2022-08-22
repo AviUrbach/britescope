@@ -3,6 +3,7 @@
 # import the necessary packages
 from flask import Flask, render_template, Response, request
 from camera import VideoCamera
+import webbrowser
 
 pi_camera = VideoCamera(flip=False) # flip pi camera if upside down.
 
@@ -26,6 +27,7 @@ def video_feed():
 
 if __name__ == '__main__':
 
+    webbrowser.open('http://127.0.0.1:3000', new=2)
     app.run(host='0.0.0.0', port=3000, debug=False)
     
 
