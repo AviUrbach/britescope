@@ -33,8 +33,8 @@ class VideoCamera(object):
         self.timerLength = 30
 
         #text fonts
-        self.timerFont = ImageFont.truetype("/Users/ranranm1/Developer/britescope-main/MacWebsiteComponents/Gidole-Regular.ttf", size=80)
-        self.textFont = ImageFont.truetype("/Users/ranranm1/Developer/britescope-main/MacWebsiteComponents/Gidole-Regular.ttf", size=40)
+        self.timerFont = ImageFont.truetype("Gidole-Regular.ttf", size=80)
+        self.textFont = ImageFont.truetype("Gidole-Regular.ttf", size=40)
 
         #sleep to make sure stream is up before doing anything else
         time.sleep(2.0)
