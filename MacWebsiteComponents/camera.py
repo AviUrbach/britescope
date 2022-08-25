@@ -14,7 +14,9 @@ import numpy as np
 class VideoCamera(object):
     def __init__(self, flip = False):
         # set up to capture video from that website
-        self.vs = cv2.VideoCapture("http://10.160.137.64:8000/stream.mjpg")
+        #self.vs = cv2.VideoCapture("http://10.160.137.64:8000/stream.mjpg")
+        #self.vs = cv2.VideoCapture("http://scope.local:8000/stream.mjpg")
+        self.vs = cv2.VideoCapture("http://192.168.43.107/mjpeg/1")
         self.flip = flip
         self.counter = 0
 
@@ -33,8 +35,8 @@ class VideoCamera(object):
         self.timerLength = 30
 
         #text fonts
-        self.timerFont = ImageFont.truetype("Gidole-Regular.ttf", size=80)
-        self.textFont = ImageFont.truetype("Gidole-Regular.ttf", size=40)
+        self.timerFont = ImageFont.truetype("Gidole-Regular.ttf", size=40)
+        self.textFont = ImageFont.truetype("Gidole-Regular.ttf", size=20)
 
         #sleep to make sure stream is up before doing anything else
         time.sleep(2.0)
@@ -69,10 +71,10 @@ class VideoCamera(object):
              #get the time to draw by checking when the timer should start
             timeToDraw = self.timerLength - (int(time.time())-self.startTime)
             if timeToDraw >=0:
-                 draw.text((300,10), str(timeToDraw), fill=(255,255,255,128), font = self.timerFont)
+                 draw.text((150,10), str(timeToDraw), fill=(255,255,255,128), font = self.timerFont)
             elif timeToDraw>=-10:
                 #hold timer for 10 seconds
-                draw.text((50,10), "Warning 30 seconds has passed!", fill=(255,255,255,128), font = self.textFont)
+                draw.text((10,10), "Warning 30 seconds has passed!", fill=(255,255,255,128), font = self.textFont)
             else:
                 #reset timer to 0
                 self.timerRunning = False
@@ -101,7 +103,7 @@ class VideoCamera(object):
 
         #if procedure is started (face was seen) save video to videos
         if (self.timerRunning):
-            #self.video_tracked.write(cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
+            self.video_tracked.write(cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
             pass
 
         return jpeg.tobytes()
@@ -118,9 +120,9 @@ class VideoCamera(object):
         self.timerRunning = True
         self.startTime  = int(time.time())
 
-        #self.frameSize = frame.size
-        #self.video_tracked.release()
-        #self.video_tracked.open("videos/"+datetime.datetime.now()+".mp4", self.fourcc, 25.0, self.frameSize)
+        self.frameSize = frame.size
+        self.video_tracked.release()
+        self.video_tracked.open("videos/"+datetime.datetime.now()+".mp4", self.fourcc, 25.0, self.frameSize)
 
     def restartTimer(self):
         '''
