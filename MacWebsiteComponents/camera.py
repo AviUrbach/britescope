@@ -14,9 +14,9 @@ import numpy as np
 class VideoCamera(object):
     def __init__(self, flip = False):
         # set up to capture video from that website
-        #self.vs = cv2.VideoCapture("http://10.160.137.64:8000/stream.mjpg")
+        self.vs = cv2.VideoCapture("http://10.160.137.64:8000/stream.mjpg")
         #self.vs = cv2.VideoCapture("http://scope.local:8000/stream.mjpg")
-        self.vs = cv2.VideoCapture("http://192.168.43.107/mjpeg/1")
+        #self.vs = cv2.VideoCapture("http://192.168.43.107/mjpeg/1")
         self.flip = flip
         self.counter = 0
 
@@ -24,9 +24,11 @@ class VideoCamera(object):
         self.timerRunning = False
 
         #video writer to save video
-        self.fourcc = cv2.VideoWriter_fourcc(*'FMP4')
-        self.frameSize = [1,1]   
-        self.video_tracked = cv2.VideoWriter('videos/defaultName.mp4', self.fourcc, 25.0, self.frameSize)
+        self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        self.frameSize = [1,1]
+        #self.video_tracked = cv2.VideoWriter("videos/"+str(datetime.datetime.now())+".avi", self.fourcc, 25.0, self.frameSize)
+        self.video_tracked = cv2.VideoWriter()
+        #print(self.video_tracked.isOpened())
 
         #what time the timer started running
         self.startTime = 0
@@ -43,7 +45,7 @@ class VideoCamera(object):
 
     def __del__(self):
         self.restartTimer()
-        self.vs.stop()
+        self.vs.release()
         pass
 
     def flip_if_needed(self, frame):
@@ -78,6 +80,9 @@ class VideoCamera(object):
             else:
                 #reset timer to 0
                 self.timerRunning = False
+                self.video_tracked.release()
+                print('video complete')
+
         image_array = np.array(frame_draw.resize((640, 360), Image.BILINEAR))
         image_array = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
 
@@ -103,8 +108,10 @@ class VideoCamera(object):
 
         #if procedure is started (face was seen) save video to videos
         if (self.timerRunning):
-            self.video_tracked.write(cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
-            pass
+            temp = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
+            temp = cv2.resize(temp, self.frameSize)
+            self.video_tracked.write(temp)
+            print('writing', self.video_tracked.isOpened())
 
         return jpeg.tobytes()
 
@@ -121,8 +128,7 @@ class VideoCamera(object):
         self.startTime  = int(time.time())
 
         self.frameSize = frame.size
-        self.video_tracked.release()
-        self.video_tracked.open("videos/"+datetime.datetime.now()+".mp4", self.fourcc, 25.0, self.frameSize)
+        self.video_tracked.open("videos/"+str(datetime.datetime.now())+".avi", self.fourcc, 25.0, self.frameSize)
 
     def restartTimer(self):
         '''
